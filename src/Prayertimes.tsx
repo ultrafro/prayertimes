@@ -33,7 +33,7 @@ const PrayerTimes = () => {
   }
 
   const fetchPrayerInfo = async () => {
-    let fetchURL = `http://api.aladhan.com/v1/calendarByCity?city=${city}&country=${country}&method=2&month=${
+    let fetchURL = `https://api.aladhan.com/v1/calendarByCity?city=${city}&country=${country}&method=2&month=${
       month + 1
     }&year=${year}`;
     fetch(fetchURL)
