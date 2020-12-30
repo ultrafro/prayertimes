@@ -228,11 +228,11 @@ const PrayerTimes = () => {
         >
           This was an attempt at a minimal prayer times app. It's free and open
           source forever isA. I used the{" "}
-          <a href="https://aladhan.com/prayer-times-api">Al-Adhan API</a>.
-          Prayer times use the Islamic Society of North America calculation
-          method. This site does not track you. You can see the source code for
-          this site <a href={"https://github.com/ultrafro/prayertimes"}>here</a>
-          .<p></p>
+          <a href="https://aladhan.com/prayer-times-api">Al-Adhan API</a> which
+          is maintained by Islamic Network. Prayer times use the Islamic Society
+          of North America calculation method. This site does not track you. You
+          can see the source code for this site{" "}
+          <a href={"https://github.com/ultrafro/prayertimes"}>here</a>.<p></p>
           <div
             style={{ float: "right", fontSize: "1.4em" }}
             onClick={() => {
