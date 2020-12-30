@@ -11,7 +11,10 @@ Prayer times use the Islamic Society of North America calculation method. This s
 ## Screenshots:
 
 ### Mobile:
-![mobileScreenshot](https://user-images.githubusercontent.com/3029964/103339719-298ede00-4a50-11eb-90ad-fdc02e1b0260.JPG)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/3029964/103339719-298ede00-4a50-11eb-90ad-fdc02e1b0260.JPG" />
+</p>
+
 <hr>
 
 ### Desktop:
