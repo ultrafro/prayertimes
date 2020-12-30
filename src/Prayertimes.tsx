@@ -188,7 +188,8 @@ const PrayerTimes = () => {
           <a href="https://aladhan.com/prayer-times-api">Al-Adhan API</a>.
           Prayer times use the Islamic Society of North America calculation
           method. This site does not track you. You can see the source code for
-          this site <a href={""}>here</a>.<p></p>
+          this site <a href={"https://github.com/ultrafro/prayertimes"}>here</a>
+          .<p></p>
           <div
             style={{ float: "right", fontSize: "1.4em" }}
             onClick={() => {
