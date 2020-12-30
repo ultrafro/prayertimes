@@ -1,9 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { FlexCol, FlexRow } from "./Flex";
 const PrayerTimes = () => {
+  let url = window.location.href;
+  let parts = url.split("/");
+
+  let urlCity = null;
+  let urlCountry = null;
+
+  let possibleBaseURL: any = null;
+
+  for (let i = 0; i < parts.length; i++) {
+    let part = parts[i];
+    if (
+      !part.includes("http") &&
+      !part.includes("www") &&
+      !part.includes(".com") &&
+      !part.includes(":") &&
+      part.length > 0
+    ) {
+      if (!urlCity) {
+        urlCity = part;
+      } else {
+        urlCountry = part;
+      }
+    } else {
+      if (part.length > 0) {
+        possibleBaseURL = part;
+      }
+    }
+  }
+
   const [prayerInfo, setPrayerInfo] = useState(null);
-  const [city, setCity] = useState("Boston");
-  const [country, setCountry] = useState("USA");
+  const [city, setCity] = useState(urlCity || "Boston");
+  const [country, setCountry] = useState(urlCountry || "USA");
   const [changeCityModal, setChangeCityModal] = useState(false);
   const [aboutModal, setAboutModal] = useState(false);
 
@@ -160,7 +189,18 @@ const PrayerTimes = () => {
           <div
             style={{ float: "right", fontSize: "1.4em" }}
             onClick={() => {
-              fetchPrayerInfo();
+              let prefix = "https://";
+              if (possibleBaseURL.includes("localhost")) {
+                prefix = "http://";
+              }
+              window.location.href =
+                prefix +
+                (possibleBaseURL as string) +
+                "/" +
+                city +
+                "/" +
+                country;
+              //   fetchPrayerInfo();
               setChangeCityModal(false);
             }}
           >
