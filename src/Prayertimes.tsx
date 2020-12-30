@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FlexCol, FlexRow } from "./Flex";
+import { getActivePrayer } from "./Helpers";
 const PrayerTimes = () => {
   let storedCity = window.localStorage.getItem("city");
   let storedCountry = window.localStorage.getItem("country");
@@ -14,7 +15,7 @@ const PrayerTimes = () => {
   const originalCity = useRef(city);
   const originalCountry = useRef(country);
 
-  let fiveTimes = [
+  let displayTimes = [
     "Fajr",
     "Sunrise",
     "Dhuhr",
@@ -39,6 +40,8 @@ const PrayerTimes = () => {
     }
   }
 
+  let activePrayer = getActivePrayer(timings);
+
   const fetchPrayerInfo = async (fetchCity: string, fetchCountry: string) => {
     let fetchURL = `https://api.aladhan.com/v1/calendarByCity?city=${fetchCity}&country=${fetchCountry}&method=2&month=${
       month + 1
@@ -62,60 +65,70 @@ const PrayerTimes = () => {
       <FlexRow style={{ width: "60%", margin: "auto" }}>
         <h2>{`${now.toLocaleDateString()}`}</h2>
       </FlexRow>
-      {timings &&
-        Object.keys(timings).map((prayerName) => {
-          if (fiveTimes.includes(prayerName)) {
-            let timing = timings[prayerName];
+      {timings && (
+        <FlexCol style={{ paddingTop: "5vh" }}>
+          {" "}
+          {Object.keys(timings).map((prayerName) => {
+            if (displayTimes.includes(prayerName)) {
+              let timing = timings[prayerName];
 
-            if (!militaryTime) {
-              try {
-                //let hourNum = parseFloat(timing.split(':')[0]);
-                let parts = timing.split(" ");
-                let timeParts = parts[0].split(":");
-                let hourNum = parseFloat(timeParts[0]);
-                let ampm = "AM";
-                if (hourNum >= 12) {
-                  ampm = "PM";
+              if (!militaryTime) {
+                try {
+                  //let hourNum = parseFloat(timing.split(':')[0]);
+                  let parts = timing.split(" ");
+                  let timeParts = parts[0].split(":");
+                  let hourNum = parseFloat(timeParts[0]);
+                  let ampm = "AM";
+                  if (hourNum >= 12) {
+                    ampm = "PM";
+                  }
+                  hourNum = hourNum % 12;
+                  if (hourNum === 0) {
+                    hourNum = 12;
+                  }
+                  timing =
+                    "" +
+                    hourNum +
+                    ":" +
+                    timeParts[1] +
+                    " " +
+                    ampm +
+                    " " +
+                    parts[1];
+                } catch (e: any) {
+                  //console.log('something went wrong parsing the format for timing: ', timing);
                 }
-                hourNum = hourNum % 12;
-                if (hourNum === 0) {
-                  hourNum = 12;
-                }
-                timing =
-                  "" +
-                  hourNum +
-                  ":" +
-                  timeParts[1] +
-                  " " +
-                  ampm +
-                  " " +
-                  parts[1];
-              } catch (e: any) {
-                //console.log('something went wrong parsing the format for timing: ', timing);
               }
-            }
 
-            return (
-              <FlexRow
-                style={{
-                  width: "60%",
-                  maxWidth: "500px",
-                  margin: "auto",
-                  fontSize: "1.2em",
-                  justifyContent: "space-between",
-                  clear: "both",
-                  borderBottom: "4px solid black",
-                  paddingTop: "20px",
-                }}
-              >
-                <span style={{ float: "left" }}>{prayerName}</span>
-                <span></span>
-                <span style={{ float: "right" }}> {timing}</span>
-                <div style={{ clear: "both" }} />
-              </FlexRow>
-            );
-          }
-        })}
+              let fontColor =
+                prayerName === activePrayer ? "rgba(0,160,60)" : "black";
+              let fontWeight = prayerName === activePrayer ? "bold" : "normal";
+
+              return (
+                <FlexRow
+                  style={{
+                    width: "60%",
+                    maxWidth: "500px",
+                    margin: "auto",
+                    fontSize: "1.2em",
+                    color: fontColor,
+                    fontWeight: fontWeight,
+                    justifyContent: "space-between",
+                    clear: "both",
+                    borderBottom: "3px solid black",
+                    paddingTop: "20px",
+                  }}
+                >
+                  <span style={{ float: "left" }}>{prayerName}</span>
+                  <span></span>
+                  <span style={{ float: "right" }}> {timing}</span>
+                  <div style={{ clear: "both" }} />
+                </FlexRow>
+              );
+            }
+          })}{" "}
+        </FlexCol>
+      )}
       <div
         onClick={() => {
           setChangeCityModal(true);
