@@ -9,6 +9,7 @@ const PrayerTimes = () => {
   const [country, setCountry] = useState(storedCountry || "USA");
   const [changeCityModal, setChangeCityModal] = useState(false);
   const [aboutModal, setAboutModal] = useState(false);
+  const [militaryTime, setMilitaryTime] = useState(false);
 
   const originalCity = useRef(city);
   const originalCountry = useRef(country);
@@ -64,6 +65,36 @@ const PrayerTimes = () => {
       {timings &&
         Object.keys(timings).map((prayerName) => {
           if (fiveTimes.includes(prayerName)) {
+            let timing = timings[prayerName];
+
+            if (!militaryTime) {
+              try {
+                //let hourNum = parseFloat(timing.split(':')[0]);
+                let parts = timing.split(" ");
+                let timeParts = parts[0].split(":");
+                let hourNum = parseFloat(timeParts[0]);
+                let ampm = "AM";
+                if (hourNum >= 12) {
+                  ampm = "PM";
+                }
+                hourNum = hourNum % 12;
+                if (hourNum === 0) {
+                  hourNum = 12;
+                }
+                timing =
+                  "" +
+                  hourNum +
+                  ":" +
+                  timeParts[1] +
+                  " " +
+                  ampm +
+                  " " +
+                  parts[1];
+              } catch (e: any) {
+                //console.log('something went wrong parsing the format for timing: ', timing);
+              }
+            }
+
             return (
               <FlexRow
                 style={{
@@ -79,7 +110,7 @@ const PrayerTimes = () => {
               >
                 <span style={{ float: "left" }}>{prayerName}</span>
                 <span></span>
-                <span style={{ float: "right" }}> {timings[prayerName]}</span>
+                <span style={{ float: "right" }}> {timing}</span>
                 <div style={{ clear: "both" }} />
               </FlexRow>
             );
