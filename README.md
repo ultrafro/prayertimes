@@ -12,11 +12,11 @@ Prayer times use the Islamic Society of North America calculation method. This s
 
 ### Mobile:
 ![mobileScreenshot](https://user-images.githubusercontent.com/3029964/103339719-298ede00-4a50-11eb-90ad-fdc02e1b0260.JPG)
-\
+<hr>
 
 ### Desktop:
 ![desktopScreenshot](https://user-images.githubusercontent.com/3029964/103339731-327faf80-4a50-11eb-8172-6d287591e6b3.JPG)
-\
+<hr>
 
 ## Installation for Contributing:
 Clone the repo, then yarn install, then yarn run start
