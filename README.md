@@ -7,6 +7,7 @@ I used the Al-Adhan Api: https://aladhan.com/prayer-times-api
 Prayer times use the Islamic Society of North America calculation method. This site does not track you. You can see the source code for this site here: https://github.com/ultrafro/prayertimes
 
 ## Live Site:
+http://www.whenshouldipray.com/
 
 ## Screenshots:
 
