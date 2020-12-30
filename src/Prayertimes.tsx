@@ -1,38 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FlexCol, FlexRow } from "./Flex";
 const PrayerTimes = () => {
-  let url = window.location.href;
-  let parts = url.split("/");
-
-  let urlCity = null;
-  let urlCountry = null;
-
-  let possibleBaseURL: any = null;
-
-  for (let i = 0; i < parts.length; i++) {
-    let part = parts[i];
-    if (
-      !part.includes("http") &&
-      !part.includes("www") &&
-      !part.includes(".com") &&
-      !part.includes(":") &&
-      part.length > 0
-    ) {
-      if (!urlCity) {
-        urlCity = part;
-      } else {
-        urlCountry = part;
-      }
-    } else {
-      if (part.length > 0) {
-        possibleBaseURL = part;
-      }
-    }
-  }
+  let storedCity = window.localStorage.getItem("city");
+  let storedCountry = window.localStorage.getItem("country");
 
   const [prayerInfo, setPrayerInfo] = useState(null);
-  const [city, setCity] = useState(urlCity || "Boston");
-  const [country, setCountry] = useState(urlCountry || "USA");
+  const [city, setCity] = useState(storedCity || "Boston");
+  const [country, setCountry] = useState(storedCountry || "USA");
   const [changeCityModal, setChangeCityModal] = useState(false);
   const [aboutModal, setAboutModal] = useState(false);
 
@@ -64,8 +38,8 @@ const PrayerTimes = () => {
     }
   }
 
-  const fetchPrayerInfo = async () => {
-    let fetchURL = `https://api.aladhan.com/v1/calendarByCity?city=${city}&country=${country}&method=2&month=${
+  const fetchPrayerInfo = async (fetchCity: string, fetchCountry: string) => {
+    let fetchURL = `https://api.aladhan.com/v1/calendarByCity?city=${fetchCity}&country=${fetchCountry}&method=2&month=${
       month + 1
     }&year=${year}`;
     fetch(fetchURL)
@@ -76,7 +50,7 @@ const PrayerTimes = () => {
   };
 
   useEffect(() => {
-    fetchPrayerInfo();
+    fetchPrayerInfo(city, country);
   }, []);
 
   return (
@@ -192,18 +166,11 @@ const PrayerTimes = () => {
           <div
             style={{ float: "right", fontSize: "1.4em" }}
             onClick={() => {
-              let prefix = "https://";
-              if (possibleBaseURL.includes("localhost")) {
-                prefix = "http://";
-              }
-              window.location.href =
-                prefix +
-                (possibleBaseURL as string) +
-                "/" +
-                city +
-                "/" +
-                country;
-              //   fetchPrayerInfo();
+              window.localStorage.setItem("city", city);
+              window.localStorage.setItem("country", country);
+              originalCity.current = city;
+              originalCountry.current = country;
+              fetchPrayerInfo(city, country);
               setChangeCityModal(false);
             }}
           >
