@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FlexCol, FlexRow } from "./Flex";
 const PrayerTimes = () => {
   let url = window.location.href;
@@ -35,6 +35,9 @@ const PrayerTimes = () => {
   const [country, setCountry] = useState(urlCountry || "USA");
   const [changeCityModal, setChangeCityModal] = useState(false);
   const [aboutModal, setAboutModal] = useState(false);
+
+  const originalCity = useRef(city);
+  const originalCountry = useRef(country);
 
   let fiveTimes = [
     "Fajr",
@@ -79,7 +82,7 @@ const PrayerTimes = () => {
   return (
     <FlexCol style={{ width: "100%" }}>
       <FlexRow style={{ width: "60%", margin: "auto" }}>
-        <h1>{`Prayer Times for ${city} ${country}`}</h1>
+        <h1>{`Prayer Times for ${originalCity.current} ${originalCountry.current}`}</h1>
       </FlexRow>
       <FlexRow style={{ width: "60%", margin: "auto" }}>
         <h2>{`${now.toLocaleDateString()}`}</h2>
