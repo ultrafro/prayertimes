@@ -20,9 +20,12 @@ const PrayerTimes = () => {
     if (stored) {
       return JSON.parse(stored);
     }
-    return [{ city: "Boston", country: "USA" }, {city: "Mecca", country: "Saudi Arabia"}];
+    return [
+      { city: "Boston", country: "USA" },
+      { city: "Mecca", country: "Saudi Arabia" },
+    ];
   });
-  
+
   const [currentCityIndex, setCurrentCityIndex] = useState(() => {
     const stored = window.localStorage.getItem("currentCityIndex");
     return stored ? parseInt(stored) : 0;
@@ -78,25 +81,20 @@ const PrayerTimes = () => {
   };
 
   const fetchWeatherForecast = async (city: string, country: string) => {
-    const API_KEY = '3887aaff6e854f788c382103242912';
+    const API_KEY = "3887aaff6e854f788c382103242912";
     try {
       const url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city},${country}&days=3&aqi=no`;
 
-      const response = await fetch(
-        `https://timeportal.vercel.app/api/cors`,
-           {
-           method: 'GET',
-          headers: {
-           'X-Target-URL': url // Target URL
-          }
-          }
-      );
+      const response = await fetch(`https://timeportal.vercel.app/api/cors`, {
+        method: "GET",
+        headers: {
+          "X-Target-URL": url, // Target URL
+        },
+      });
       const data = await response.json();
 
-
-      
       if (data.error) {
-        console.error('Weather API error:', data.error);
+        console.error("Weather API error:", data.error);
         setWeatherForecast([]);
         return;
       }
@@ -107,10 +105,10 @@ const PrayerTimes = () => {
         icon: day.day.condition.icon,
         description: day.day.condition.text,
       }));
-      
+
       setWeatherForecast(forecasts);
     } catch (error) {
-      console.error('Error fetching weather:', error);
+      console.error("Error fetching weather:", error);
       setWeatherForecast([]);
     }
   };
@@ -124,7 +122,10 @@ const PrayerTimes = () => {
     const currentCity = cities[currentCityIndex];
     fetchPrayerInfo(currentCity.city, currentCity.country);
     fetchWeatherForecast(currentCity.city, currentCity.country);
-    window.localStorage.setItem("currentCityIndex", currentCityIndex.toString());
+    window.localStorage.setItem(
+      "currentCityIndex",
+      currentCityIndex.toString()
+    );
   }, [currentCityIndex, cities]);
 
   const removeCity = (indexToRemove: number) => {
@@ -140,234 +141,250 @@ const PrayerTimes = () => {
   };
 
   return (
-    <FlexCol style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-around" }}>
-      <FlexCol style={{
-        margin: "10px"
-      }}>
-        <FlexRow style={{ width: "100%", fontSize: "4vh" }}>
+    <FlexCol
+      style={{
+        width: "100vw",
+        height: "100vh",
+        gap: "10px",
+      }}
+    >
+      {/* Title */}
+      <FlexCol
+        style={{
+          marginTop: "5px",
+          marginBottom: "5px",
+          gap: "2px",
+        }}
+      >
+        <FlexRow style={{ width: "100%", fontSize: "3vh" }}>
           {`Prayer Times for `}
         </FlexRow>
-        <FlexRow style={{ width: "100%", fontSize: "4vh" }}>
+        <FlexRow style={{ width: "100%", fontSize: "3vh" }}>
           <strong>{` ${cities[currentCityIndex].city}, ${cities[currentCityIndex].country}`}</strong>
         </FlexRow>
         <FlexRow style={{ width: "100%" }}>
-        {`${now.toLocaleDateString()}`}
+          {`${now.toLocaleDateString()}`}
         </FlexRow>
       </FlexCol>
 
-    <FlexCol style={{
-      margin: "5px"
-    }}>
-      {cities.length > 1 && (
-        <FlexRow style={{
-          display: "flex",
-          width: "100%",
-          justifyContent: "center"
-        }}>
-        <FlexRow 
-          style={{ 
-            width: "80%", 
-            justifyContent: "center", 
-            gap: "10px",
-            // flexWrap: "nowrap",
-            // overflowX: "auto",
-            padding: "10px 0"
-          }}
-        >
-          {cities.map((cityInfo, index) => (
-            <div 
-              key={index} 
-              style={{ 
-                display: "inline-flex", 
-                alignItems: "center",
-                position: "relative",
-                minWidth: "fit-content"
-              }}
-            >
-              <button
-                onClick={() => setCurrentCityIndex(index)}
-                style={{
-                  padding: "5px 25px 5px 10px",
-                  backgroundColor: index === currentCityIndex ? "#ddd" : "white",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                {`${cityInfo.city}, ${cityInfo.country}`}
-              </button>
-              <button
-                onClick={() => removeCity(index)}
-                style={{
-                  position: "absolute",
-                  right: "5px",
-                  padding: "2px 5px",
-                  backgroundColor: "transparent",
-                  border: "none",
-                  borderRadius: "50%",
-                  cursor: "pointer",
-                  color: "#999",
-                  fontSize: "14px",
-                  lineHeight: "1",
-                  transition: "color 0.2s ease"
-                }}
-                onMouseOver={(e) => e.currentTarget.style.color = "#ff4444"}
-                onMouseOut={(e) => e.currentTarget.style.color = "#999"}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </FlexRow>
-        </FlexRow>
-      )}
-
-      {weatherForecast.length > 0 && (
-        <FlexRow style={{
-          width: "80%",
-          maxWidth: "500px",
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "8px 16px",
-          margin: "0 auto",
-          backgroundColor: "#f5f5f5",
-          borderRadius: "8px",
-        }}>
-          {weatherForecast.map((forecast, index) => (
-            <div
-              key={index}
+      {/* City Display */}
+      <FlexCol>
+        {cities.length > 1 && (
+          <FlexRow
+            style={{
+              width: "100%",
+            }}
+          >
+            <FlexRow
               style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "2px",
-                flex: "1",
-                justifyContent: "center"
+                width: "80%",
+                gap: "10px",
+                padding: "10px 0",
+                flexWrap: "wrap",
               }}
             >
-              <div style={{ 
-                fontSize: "0.9em",
-                textAlign: "center"
-              }}>
-                {forecast.date.toLocaleDateString(undefined, { weekday: 'short' })}
-              </div>
-              <div style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "4px"
-              }}>
-                <img
-                  src={`https:${forecast.icon}`}
-                  alt={forecast.description}
-                  style={{ width: "30px", height: "30px" }}
-                />
-                <div style={{ 
-                  fontSize: "0.9em",
-                  textAlign: "center"
-                }}>
-                  {forecast.temp}°F
+              {cities.map((cityInfo, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    position: "relative",
+                    minWidth: "fit-content",
+                  }}
+                >
+                  <button
+                    onClick={() => setCurrentCityIndex(index)}
+                    style={{
+                      padding: "5px 25px 5px 10px",
+                      backgroundColor:
+                        index === currentCityIndex ? "#ddd" : "white",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {`${cityInfo.city}, ${cityInfo.country}`}
+                  </button>
+                  <button
+                    onClick={() => removeCity(index)}
+                    style={{
+                      position: "absolute",
+                      right: "5px",
+                      padding: "2px 5px",
+                      backgroundColor: "transparent",
+                      border: "none",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      color: "#999",
+                      fontSize: "14px",
+                      lineHeight: "1",
+                      transition: "color 0.2s ease",
+                    }}
+                    onMouseOver={(e) =>
+                      (e.currentTarget.style.color = "#ff4444")
+                    }
+                    onMouseOut={(e) => (e.currentTarget.style.color = "#999")}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </FlexRow>
+          </FlexRow>
+        )}
+
+        {weatherForecast.length > 0 && (
+          <FlexRow
+            style={{
+              width: "80%",
+              maxWidth: "500px",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "8px 16px",
+              margin: "0 auto",
+              backgroundColor: "#f5f5f5",
+              borderRadius: "8px",
+            }}
+          >
+            {weatherForecast.map((forecast, index) => (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "2px",
+                  flex: "1",
+                  justifyContent: "center",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "0.9em",
+                    textAlign: "center",
+                  }}
+                >
+                  {forecast.date.toLocaleDateString(undefined, {
+                    weekday: "short",
+                  })}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  <img
+                    src={`https:${forecast.icon}`}
+                    alt={forecast.description}
+                    style={{ width: "30px", height: "30px" }}
+                  />
+                  <div
+                    style={{
+                      fontSize: "0.9em",
+                      textAlign: "center",
+                    }}
+                  >
+                    {forecast.temp}°F
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </FlexRow>
-      )}
+            ))}
+          </FlexRow>
+        )}
       </FlexCol>
 
       <FlexCol
         style={{
           width: "100%",
           height: "100%",
-          justifyContent: "center",
-          display: "flex",
-          flexDirection: "column",
-          margin: "2px"
         }}
       >
-      {timings && (
-        <FlexCol >
+        {timings && (
+          <FlexCol style={{ width: "100%", height: "100%" }}>
+            {Object.keys(timings).map((prayerName) => {
+              if (displayTimes.includes(prayerName)) {
+                let timing = timings[prayerName];
 
-          {Object.keys(timings).map((prayerName) => {
-            if (displayTimes.includes(prayerName)) {
-              let timing = timings[prayerName];
-
-              if (!militaryTime) {
-                try {
-                  //let hourNum = parseFloat(timing.split(':')[0]);
-                  let parts = timing.split(" ");
-                  let timeParts = parts[0].split(":");
-                  let hourNum = parseFloat(timeParts[0]);
-                  let ampm = "AM";
-                  if (hourNum >= 12) {
-                    ampm = "PM";
+                if (!militaryTime) {
+                  try {
+                    //let hourNum = parseFloat(timing.split(':')[0]);
+                    let parts = timing.split(" ");
+                    let timeParts = parts[0].split(":");
+                    let hourNum = parseFloat(timeParts[0]);
+                    let ampm = "AM";
+                    if (hourNum >= 12) {
+                      ampm = "PM";
+                    }
+                    hourNum = hourNum % 12;
+                    if (hourNum === 0) {
+                      hourNum = 12;
+                    }
+                    timing =
+                      "" +
+                      hourNum +
+                      ":" +
+                      timeParts[1] +
+                      " " +
+                      ampm +
+                      " " +
+                      parts[1];
+                  } catch (e: any) {
+                    //console.log('something went wrong parsing the format for timing: ', timing);
                   }
-                  hourNum = hourNum % 12;
-                  if (hourNum === 0) {
-                    hourNum = 12;
-                  }
-                  timing =
-                    "" +
-                    hourNum +
-                    ":" +
-                    timeParts[1] +
-                    " " +
-                    ampm +
-                    " " +
-                    parts[1];
-                } catch (e: any) {
-                  //console.log('something went wrong parsing the format for timing: ', timing);
                 }
+
+                let fontColor =
+                  prayerName === activePrayer ? "rgba(0,160,60)" : "black";
+                let fontWeight =
+                  prayerName === activePrayer ? "bold" : "normal";
+
+                return (
+                  <FlexRow
+                    style={{
+                      width: "60%",
+                      maxWidth: "500px",
+                      fontSize: "1.2em",
+                      color: fontColor,
+                      fontWeight: fontWeight,
+                      justifyContent: "space-between",
+                      borderBottom: "1px solid #000",
+                      paddingTop: "20px",
+                    }}
+                  >
+                    <span style={{ float: "left" }}>{prayerName}</span>
+                    <span></span>
+                    <span style={{ float: "right" }}> {timing}</span>
+                  </FlexRow>
+                );
               }
-
-              let fontColor =
-                prayerName === activePrayer ? "rgba(0,160,60)" : "black";
-              let fontWeight = prayerName === activePrayer ? "bold" : "normal";
-
-              return (
-                <FlexRow
-                  style={{
-                    width: "60%",
-                    maxWidth: "500px",
-                    margin: "auto",
-                    fontSize: "1.2em",
-                    color: fontColor,
-                    fontWeight: fontWeight,
-                    justifyContent: "space-between",
-                    clear: "both",
-                    borderBottom: "1px solid #000",
-                    paddingTop: "20px",
-                  }}
-                >
-                  <span style={{ float: "left" }}>{prayerName}</span>
-                  <span></span>
-                  <span style={{ float: "right" }}> {timing}</span>
-                  <div style={{ clear: "both" }} />
-                </FlexRow>
-              );
-            }
-          })}{" "}
-        </FlexCol>
-      )}
-         <div style={{
-        width: "100%",
-        height: "5vh",
-        // backgroundColor: "red",
-      }} /> 
+            })}{" "}
+          </FlexCol>
+        )}
+        <div
+          style={{
+            width: "100%",
+            height: "5vh",
+            // backgroundColor: "red",
+          }}
+        />
       </FlexCol>
 
       <div
         onClick={() => setChangeCityModal(true)}
         style={{
           position: "absolute",
-          bottom: "3vw",
+          bottom: "5vw",
           right: "3vw",
           fontSize: "1em",
           color: "#666",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         [Add City]
@@ -378,11 +395,11 @@ const PrayerTimes = () => {
         }}
         style={{
           position: "absolute",
-          bottom: "3vw",
+          bottom: "5vw",
           left: "3vw",
           fontSize: "1em",
           color: "#666",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         [About]
@@ -420,20 +437,26 @@ const PrayerTimes = () => {
               zIndex: 1000,
             }}
           >
-            <div style={{ 
-              fontSize: "1.6em",
-              marginBottom: "8px",
-              color: "#333"
-            }}>
+            <div
+              style={{
+                fontSize: "1.6em",
+                marginBottom: "8px",
+                color: "#333",
+              }}
+            >
               Add New City
             </div>
             <FlexCol style={{ gap: "24px" }}>
               <div>
-                <div style={{ 
-                  marginBottom: "10px",
-                  color: "#555",
-                  fontSize: "0.95em",
-                }}>City</div>
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    color: "#555",
+                    fontSize: "0.95em",
+                  }}
+                >
+                  City
+                </div>
                 <input
                   placeholder="Enter city name"
                   type="text"
@@ -450,7 +473,8 @@ const PrayerTimes = () => {
                   onFocus={(e) => {
                     e.target.style.borderColor = "#007AFF";
                     e.target.style.backgroundColor = "#ffffff";
-                    e.target.style.boxShadow = "0 0 0 3px rgba(0, 122, 255, 0.1)";
+                    e.target.style.boxShadow =
+                      "0 0 0 3px rgba(0, 122, 255, 0.1)";
                   }}
                   onBlur={(e) => {
                     e.target.style.borderColor = "#e0e0e0";
@@ -462,11 +486,15 @@ const PrayerTimes = () => {
                 />
               </div>
               <div>
-                <div style={{ 
-                  marginBottom: "10px",
-                  color: "#555",
-                  fontSize: "0.95em",
-                }}>Country</div>
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    color: "#555",
+                    fontSize: "0.95em",
+                  }}
+                >
+                  Country
+                </div>
                 <input
                   placeholder="Enter country name"
                   type="text"
@@ -483,7 +511,8 @@ const PrayerTimes = () => {
                   onFocus={(e) => {
                     e.target.style.borderColor = "#007AFF";
                     e.target.style.backgroundColor = "#ffffff";
-                    e.target.style.boxShadow = "0 0 0 3px rgba(0, 122, 255, 0.1)";
+                    e.target.style.boxShadow =
+                      "0 0 0 3px rgba(0, 122, 255, 0.1)";
                   }}
                   onBlur={(e) => {
                     e.target.style.borderColor = "#e0e0e0";
@@ -495,11 +524,13 @@ const PrayerTimes = () => {
                 />
               </div>
             </FlexCol>
-            <FlexRow style={{ 
-              justifyContent: "flex-end", 
-              marginTop: "8px",
-              gap: "12px"
-            }}>
+            <FlexRow
+              style={{
+                justifyContent: "flex-end",
+                marginTop: "8px",
+                gap: "12px",
+              }}
+            >
               <button
                 onClick={() => setChangeCityModal(false)}
                 style={{
@@ -570,109 +601,120 @@ const PrayerTimes = () => {
             }}
             onClick={() => setAboutModal(false)}
           />
-          <FlexCol style={{
-            position: "absolute",
-            left: "0px",
-            top: "0px",
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center"
-          }}>
-
-
           <FlexCol
             style={{
-              width: "60%",           
-              backgroundColor: "#ffffff",
-              borderRadius: "16px",
-              padding: "32px",
+              position: "absolute",
+              left: "0px",
+              top: "0px",
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
               justifyContent: "center",
-              boxShadow: "0 16px 40px rgba(0, 0, 0, 0.25)",
-              gap: "20px",
-              border: "1px solid rgba(0, 0, 0, 0.05)",
-              zIndex: 1000,
-              margin: "20px",
+              alignItems: "center",
             }}
           >
-            <div style={{ 
-              fontSize: "1.6em",
-              color: "#333",
-              marginBottom: "8px"
-            }}>
-              About
-            </div>
-            <div style={{
-              lineHeight: "1.6",
-              color: "#555",
-              fontSize: "0.95em"
-            }}>
-              This was an attempt at a minimal prayer times app. It's free and open
-              source forever isA. I used the{" "}
-              <a 
-                href="https://aladhan.com/prayer-times-api"
+            <FlexCol
+              style={{
+                width: "60%",
+                backgroundColor: "#ffffff",
+                borderRadius: "16px",
+                padding: "32px",
+                justifyContent: "center",
+                boxShadow: "0 16px 40px rgba(0, 0, 0, 0.25)",
+                gap: "20px",
+                border: "1px solid rgba(0, 0, 0, 0.05)",
+                zIndex: 1000,
+                margin: "20px",
+              }}
+            >
+              <div
                 style={{
-                  color: "#007AFF",
-                  textDecoration: "none"
+                  fontSize: "1.6em",
+                  color: "#333",
+                  marginBottom: "8px",
                 }}
               >
-                Al-Adhan API
-              </a>{" "}
-              which is maintained by Islamic Network.
-            </div>
-            <div style={{
-              lineHeight: "1.6",
-              color: "#555",
-              fontSize: "0.95em"
-            }}>
-              Prayer times use the Islamic Society of North America calculation method. 
-              This site does not track you.
-            </div>
-            <div style={{
-              lineHeight: "1.6",
-              color: "#555",
-              fontSize: "0.95em"
-            }}>
-              You can see the source code for this site{" "}
-              <a 
-                href="https://github.com/ultrafro/prayertimes"
+                About
+              </div>
+              <div
                 style={{
-                  color: "#007AFF",
-                  textDecoration: "none"
-                }}
-              >
-                here
-              </a>.
-            </div>
-            <FlexRow style={{ 
-              justifyContent: "flex-end",
-              marginTop: "8px"
-            }}>
-              <button
-                onClick={() => setAboutModal(false)}
-                style={{
-                  padding: "12px 24px",
-                  fontSize: "0.95em",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  backgroundColor: "#f0f0f0",
+                  lineHeight: "1.6",
                   color: "#555",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = "#e5e5e5";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = "#f0f0f0";
+                  fontSize: "0.95em",
                 }}
               >
-                Close
-              </button>
-            </FlexRow>
-          </FlexCol>
+                This was an attempt at a minimal prayer times app. It's free and
+                open source forever isA. I used the{" "}
+                <a
+                  href="https://aladhan.com/prayer-times-api"
+                  style={{
+                    color: "#007AFF",
+                    textDecoration: "none",
+                  }}
+                >
+                  Al-Adhan API
+                </a>{" "}
+                which is maintained by Islamic Network.
+              </div>
+              <div
+                style={{
+                  lineHeight: "1.6",
+                  color: "#555",
+                  fontSize: "0.95em",
+                }}
+              >
+                Prayer times use the Islamic Society of North America
+                calculation method. This site does not track you.
+              </div>
+              <div
+                style={{
+                  lineHeight: "1.6",
+                  color: "#555",
+                  fontSize: "0.95em",
+                }}
+              >
+                You can see the source code for this site{" "}
+                <a
+                  href="https://github.com/ultrafro/prayertimes"
+                  style={{
+                    color: "#007AFF",
+                    textDecoration: "none",
+                  }}
+                >
+                  here
+                </a>
+                .
+              </div>
+              <FlexRow
+                style={{
+                  justifyContent: "flex-end",
+                  marginTop: "8px",
+                }}
+              >
+                <button
+                  onClick={() => setAboutModal(false)}
+                  style={{
+                    padding: "12px 24px",
+                    fontSize: "0.95em",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    backgroundColor: "#f0f0f0",
+                    color: "#555",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "#e5e5e5";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f0f0f0";
+                  }}
+                >
+                  Close
+                </button>
+              </FlexRow>
+            </FlexCol>
           </FlexCol>
         </>
       )}
