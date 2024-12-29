@@ -81,7 +81,7 @@ const PrayerTimes = () => {
     const API_KEY = '3887aaff6e854f788c382103242912';
     try {
       const response = await fetch(
-        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city},${country}&days=3&aqi=no`
+        `https://cors-anywhere.herokuapp.com/https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city},${country}&days=3&aqi=no`
       );
       const data = await response.json();
       
