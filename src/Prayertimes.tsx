@@ -80,10 +80,20 @@ const PrayerTimes = () => {
   const fetchWeatherForecast = async (city: string, country: string) => {
     const API_KEY = '3887aaff6e854f788c382103242912';
     try {
+      const url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city},${country}&days=3&aqi=no`;
+
       const response = await fetch(
-        `https://cors-anywhere.herokuapp.com/https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city},${country}&days=3&aqi=no`
+        `https://timeportal.vercel.app/api/cors`,
+           {
+           method: 'GET',
+          headers: {
+           'X-Target-URL': url // Target URL
+          }
+          }
       );
       const data = await response.json();
+
+
       
       if (data.error) {
         console.error('Weather API error:', data.error);
