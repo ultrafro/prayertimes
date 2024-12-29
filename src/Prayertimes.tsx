@@ -1,13 +1,29 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FlexCol, FlexRow } from "./Flex";
 import { getActivePrayer } from "./Helpers";
+
+type CityInfo = {
+  city: string;
+  country: string;
+};
+
 const PrayerTimes = () => {
-  let storedCity = window.localStorage.getItem("city");
-  let storedCountry = window.localStorage.getItem("country");
+  const [cities, setCities] = useState<CityInfo[]>(() => {
+    const stored = window.localStorage.getItem("cities");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return [{ city: "Boston", country: "USA" }, {city: "Mecca", country: "Saudi Arabia"}];
+  });
+  
+  const [currentCityIndex, setCurrentCityIndex] = useState(() => {
+    const stored = window.localStorage.getItem("currentCityIndex");
+    return stored ? parseInt(stored) : 0;
+  });
 
   const [prayerInfo, setPrayerInfo] = useState(null);
-  const [city, setCity] = useState(storedCity || "Boston");
-  const [country, setCountry] = useState(storedCountry || "USA");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
   const [changeCityModal, setChangeCityModal] = useState(false);
   const [aboutModal, setAboutModal] = useState(false);
   const [militaryTime, setMilitaryTime] = useState(false);
@@ -53,21 +69,105 @@ const PrayerTimes = () => {
       });
   };
 
+  const saveCities = (newCities: CityInfo[]) => {
+    window.localStorage.setItem("cities", JSON.stringify(newCities));
+    setCities(newCities);
+  };
+
   useEffect(() => {
-    fetchPrayerInfo(city, country);
-  }, []);
+    const currentCity = cities[currentCityIndex];
+    fetchPrayerInfo(currentCity.city, currentCity.country);
+    window.localStorage.setItem("currentCityIndex", currentCityIndex.toString());
+  }, [currentCityIndex, cities]);
+
+  const removeCity = (indexToRemove: number) => {
+    if (cities.length <= 1) {
+      return; // Don't allow removing the last city
+    }
+    const newCities = cities.filter((_, index) => index !== indexToRemove);
+    saveCities(newCities);
+    if (currentCityIndex >= indexToRemove) {
+      // Adjust current city index if needed
+      setCurrentCityIndex(Math.max(0, currentCityIndex - 1));
+    }
+  };
 
   return (
-    <FlexCol style={{ width: "100%" }}>
-      <FlexRow style={{ width: "60%", margin: "auto" }}>
-        <h1>{`Prayer Times for ${originalCity.current} ${originalCountry.current}`}</h1>
+    <FlexCol style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+      <FlexRow style={{ width: "100%" }}>
+        <h2>{`Prayer Times for ${cities[currentCityIndex].city}, ${cities[currentCityIndex].country}`}</h2>
       </FlexRow>
-      <FlexRow style={{ width: "60%", margin: "auto" }}>
-        <h2>{`${now.toLocaleDateString()}`}</h2>
+      <FlexRow style={{ width: "100%" }}>
+        <h3>{`${now.toLocaleDateString()}`}</h3>
       </FlexRow>
+      {cities.length > 1 && (
+        <FlexRow style={{
+          display: "flex",
+          width: "100%",
+          justifyContent: "center"
+        }}>
+        <FlexRow 
+          style={{ 
+            width: "80%", 
+            justifyContent: "center", 
+            gap: "10px",
+            // flexWrap: "nowrap",
+            // overflowX: "auto",
+            padding: "10px 0"
+          }}
+        >
+          {cities.map((cityInfo, index) => (
+            <div 
+              key={index} 
+              style={{ 
+                display: "inline-flex", 
+                alignItems: "center",
+                position: "relative",
+                minWidth: "fit-content"
+              }}
+            >
+              <button
+                onClick={() => setCurrentCityIndex(index)}
+                style={{
+                  padding: "5px 25px 5px 10px",
+                  backgroundColor: index === currentCityIndex ? "#ddd" : "white",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                {`${cityInfo.city}, ${cityInfo.country}`}
+              </button>
+              <button
+                onClick={() => removeCity(index)}
+                style={{
+                  position: "absolute",
+                  right: "5px",
+                  padding: "2px 5px",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  color: "#999",
+                  fontSize: "14px",
+                  lineHeight: "1",
+                  transition: "color 0.2s ease"
+                }}
+                onMouseOver={(e) => e.currentTarget.style.color = "#ff4444"}
+                onMouseOut={(e) => e.currentTarget.style.color = "#999"}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </FlexRow>
+        </FlexRow>
+      )}
+
       {timings && (
-        <FlexCol style={{ paddingTop: "5vh" }}>
-          {" "}
+        <FlexCol >
+
           {Object.keys(timings).map((prayerName) => {
             if (displayTimes.includes(prayerName)) {
               let timing = timings[prayerName];
@@ -129,10 +229,14 @@ const PrayerTimes = () => {
           })}{" "}
         </FlexCol>
       )}
+         <div style={{
+        width: "100%",
+        height: "5vh",
+        backgroundColor: "red",
+      }} /> 
+
       <div
-        onClick={() => {
-          setChangeCityModal(true);
-        }}
+        onClick={() => setChangeCityModal(true)}
         style={{
           position: "absolute",
           bottom: "5vw",
@@ -140,7 +244,7 @@ const PrayerTimes = () => {
           fontSize: "1.4em",
         }}
       >
-        [Change City]
+        [Add City]
       </div>
       <div
         onClick={() => {
@@ -163,7 +267,6 @@ const PrayerTimes = () => {
             left: "5vw",
             width: "80vw",
             maxWidth: "400px",
-            // height: "60vh",
             backgroundColor: "rgba(200,200,200)",
             borderRadius: "20px",
             padding: "20px",
@@ -171,55 +274,50 @@ const PrayerTimes = () => {
           }}
         >
           <FlexRow style={{ fontSize: "1.2em" }}>
-            <span style={{ float: "left" }}> City? </span>{" "}
+            <span>City:</span>
             <input
-              placeholder={"Boston"}
+              placeholder="Boston"
               type="text"
               style={{
-                float: "right",
                 width: "200px",
                 height: "25px",
                 fontSize: "1.2em",
               }}
-              onChange={(event) => {
-                setCity(event.target.value);
-              }}
+              onChange={(e) => setCity(e.target.value)}
               value={city}
-            ></input>
-            <div style={{ clear: "both" }}></div>
+            />
           </FlexRow>
           <FlexRow style={{ fontSize: "1.2em" }}>
-            <span style={{ float: "left" }}> Country? </span>{" "}
+            <span>Country:</span>
             <input
-              placeholder={"USA"}
+              placeholder="USA"
               type="text"
               style={{
-                float: "right",
                 width: "200px",
                 height: "25px",
                 fontSize: "1.2em",
               }}
-              onChange={(event) => {
-                setCountry(event.target.value);
-              }}
+              onChange={(e) => setCountry(e.target.value)}
               value={country}
-            ></input>
-            <div style={{ clear: "both" }}></div>
+            />
           </FlexRow>
-          <p></p>
-          <div
-            style={{ float: "right", fontSize: "1.4em" }}
-            onClick={() => {
-              window.localStorage.setItem("city", city);
-              window.localStorage.setItem("country", country);
-              originalCity.current = city;
-              originalCountry.current = country;
-              fetchPrayerInfo(city, country);
-              setChangeCityModal(false);
-            }}
-          >
-            [Finished]
-          </div>
+          <FlexRow style={{ justifyContent: "space-between", marginTop: "20px" }}>
+            <button
+              onClick={() => {
+                if (city && country) {
+                  const newCities = [...cities, { city, country }];
+                  saveCities(newCities);
+                  setCurrentCityIndex(newCities.length - 1);
+                  setCity("");
+                  setCountry("");
+                  setChangeCityModal(false);
+                }
+              }}
+            >
+              Add City
+            </button>
+            <button onClick={() => setChangeCityModal(false)}>Cancel</button>
+          </FlexRow>
         </FlexCol>
       )}
       {aboutModal && (
@@ -230,7 +328,6 @@ const PrayerTimes = () => {
             left: "5vw",
             width: "80vw",
             maxWidth: "400px",
-            // height: "60vh",
             backgroundColor: "rgba(200,200,200)",
             borderRadius: "20px",
             padding: "20px",
