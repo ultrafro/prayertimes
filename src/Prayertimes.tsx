@@ -141,7 +141,7 @@ const PrayerTimes = () => {
           <strong>{` ${cities[currentCityIndex].city}, ${cities[currentCityIndex].country}`}</strong>
         </FlexRow>
         <FlexRow style={{ width: "100%" }}>
-        {`${now.toLocaleDateString()}`}s
+        {`${now.toLocaleDateString()}`}
         </FlexRow>
       </FlexCol>
 
